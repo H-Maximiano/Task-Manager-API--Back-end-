@@ -1,0 +1,158 @@
+[
+  {
+    "id": "table.Tarefa",
+    "label": "Create table Tarefa",
+    "summary": "Creates table Tarefa with required columns",
+    "operationClass": "additive",
+    "target": {
+      "id": "sqlite",
+      "details": {
+        "objectType": "table",
+        "name": "Tarefa"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Tarefa\" does not exist",
+        "sql": "SELECT COUNT(*) = 0 AS \"result\" FROM \"sqlite_master\" WHERE (\"type\" = ?1 AND \"name\" = ?2)",
+        "params": [
+          "table",
+          "Tarefa"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Tarefa\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Tarefa\"",
+        "sql": "CREATE TABLE \"Tarefa\" (\n  \"concluida\" INTEGER NOT NULL DEFAULT 0,\n  \"id\" INTEGER PRIMARY KEY AUTOINCREMENT,\n  \"nome\" TEXT NOT NULL,\n  \"usuarioId\" INTEGER NOT NULL,\n  FOREIGN KEY (\"usuarioId\") REFERENCES \"Usuario\" (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Tarefa\" exists",
+        "sql": "SELECT COUNT(*) > 0 AS \"result\" FROM \"sqlite_master\" WHERE (\"type\" = ?1 AND \"name\" = ?2)",
+        "params": [
+          "table",
+          "Tarefa"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Tarefa\""
+        }
+      },
+      {
+        "description": "verify table \"Tarefa\" has exactly its columns",
+        "sql": "SELECT (SELECT COUNT(*) FROM pragma_table_info('Tarefa')) = 4 AND (SELECT COUNT(*) FROM pragma_table_info('Tarefa') WHERE (name, LOWER(type), \"notnull\", pk) IN (VALUES ('concluida', 'integer', 1, 0), ('id', 'integer', 0, 1), ('nome', 'text', 1, 0), ('usuarioId', 'integer', 1, 0))) = 4"
+      }
+    ]
+  },
+  {
+    "id": "table.Usuario",
+    "label": "Create table Usuario",
+    "summary": "Creates table Usuario with required columns",
+    "operationClass": "additive",
+    "target": {
+      "id": "sqlite",
+      "details": {
+        "objectType": "table",
+        "name": "Usuario"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Usuario\" does not exist",
+        "sql": "SELECT COUNT(*) = 0 AS \"result\" FROM \"sqlite_master\" WHERE (\"type\" = ?1 AND \"name\" = ?2)",
+        "params": [
+          "table",
+          "Usuario"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Usuario\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Usuario\"",
+        "sql": "CREATE TABLE \"Usuario\" (\n  \"email\" TEXT NOT NULL,\n  \"id\" INTEGER PRIMARY KEY AUTOINCREMENT,\n  \"senha\" TEXT NOT NULL,\n  UNIQUE (\"email\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Usuario\" exists",
+        "sql": "SELECT COUNT(*) > 0 AS \"result\" FROM \"sqlite_master\" WHERE (\"type\" = ?1 AND \"name\" = ?2)",
+        "params": [
+          "table",
+          "Usuario"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Usuario\""
+        }
+      },
+      {
+        "description": "verify table \"Usuario\" has exactly its columns",
+        "sql": "SELECT (SELECT COUNT(*) FROM pragma_table_info('Usuario')) = 3 AND (SELECT COUNT(*) FROM pragma_table_info('Usuario') WHERE (name, LOWER(type), \"notnull\", pk) IN (VALUES ('email', 'text', 1, 0), ('id', 'integer', 0, 1), ('senha', 'text', 1, 0))) = 3"
+      }
+    ]
+  },
+  {
+    "id": "index.Tarefa.Tarefa_usuarioId_idx_5f01c7d6",
+    "label": "Create index Tarefa_usuarioId_idx_5f01c7d6 on Tarefa",
+    "summary": "Creates index Tarefa_usuarioId_idx_5f01c7d6 on Tarefa",
+    "operationClass": "additive",
+    "target": {
+      "id": "sqlite",
+      "details": {
+        "objectType": "index",
+        "name": "Tarefa_usuarioId_idx_5f01c7d6",
+        "table": "Tarefa"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Tarefa_usuarioId_idx_5f01c7d6\" is missing",
+        "sql": "SELECT COUNT(*) = 0 AS \"result\" FROM \"sqlite_master\" WHERE (\"type\" = ?1 AND \"name\" = ?2)",
+        "params": [
+          "index",
+          "Tarefa_usuarioId_idx_5f01c7d6"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Tarefa_usuarioId_idx_5f01c7d6\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Tarefa_usuarioId_idx_5f01c7d6\"",
+        "sql": "CREATE INDEX \"Tarefa_usuarioId_idx_5f01c7d6\" ON \"Tarefa\" (\"usuarioId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Tarefa_usuarioId_idx_5f01c7d6\" exists",
+        "sql": "SELECT COUNT(*) > 0 AS \"result\" FROM \"sqlite_master\" WHERE (\"type\" = ?1 AND \"name\" = ?2)",
+        "params": [
+          "index",
+          "Tarefa_usuarioId_idx_5f01c7d6"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "index \"Tarefa_usuarioId_idx_5f01c7d6\""
+        }
+      },
+      {
+        "description": "verify index \"Tarefa_usuarioId_idx_5f01c7d6\" on \"Tarefa\" covers (usuarioId)",
+        "sql": "SELECT EXISTS (SELECT 1 FROM pragma_index_list('Tarefa') WHERE name = 'Tarefa_usuarioId_idx_5f01c7d6' AND \"unique\" = 0) AND (SELECT COUNT(*) FROM pragma_index_info('Tarefa_usuarioId_idx_5f01c7d6')) = 1 AND (SELECT COUNT(*) FROM pragma_index_info('Tarefa_usuarioId_idx_5f01c7d6') WHERE (seqno, name) IN (VALUES (0, 'usuarioId'))) = 1"
+      }
+    ]
+  }
+]
